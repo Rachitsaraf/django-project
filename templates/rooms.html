@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat Room{% endblock %}
+
+{% block content %}
+<style>
+    /* Your existing styles can go here */
+</style>
+
+{% if user.is_authenticated %}
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul>
+            <li><i class="fas fa-comments"></i> Chats</li>
+            <li><i class="fas fa-video"></i> Video Calls</li>
+            <li><i class="fas fa-user-friends"></i> Contacts</li>
+            <li><i class="fas fa-cog"></i> Settings</li>
+            <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+        </ul>
+
+        <!-- Room List -->
+        <div class="room-list">
+            <h4>Available Rooms</h4>
+            <ul>
+                {% for room in rooms %}
+                <li><a href="{% url 'chatapp:chat_room' slug=room.slug %}">{{ room.name }}</a></li>
+                {% empty %}
+                    <li>No available rooms</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <h3>Chat with User</h3>
+        </div>
+        
+        <!-- Chat Window -->
+        <div class="chat-window" id="chatbox">
+            {% for message in messages %}
+            <div class="message {% if message.user == request.user %}sent{% else %}received{% endif %}">
+                <b>{{ message.user.username }}</b>: {{ message.content }}
+                {% if message.file %}
+                <a href="{{ message.file.url }}" download>Download File</a>
+                {% endif %}
+                <span class="time">{{ message.formatted_time }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Message Input -->
+        <div class="message-input">
+            <form method="POST" enctype="multipart/form-data" id="chat-form">
+                {% csrf_token %}
+                <input type="text" name="content" placeholder="Type a message..." id="my_input">
+                <input type="file" name="file" id="file-input">
+                <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Video Call Overlay -->
+<div class="video-call-overlay" id="video-call-overlay">
+    <video class="remote-video" id="remote-video" autoplay></video>
+    <video class="local-video" id="local-video" autoplay muted></video>
+    <div class="call-controls">
+        <button><i class="fas fa-microphone"></i></button>
+        <button class="end-call" id="end-call"><i class="fas fa-phone-slash"></i></button>
+        <button><i class="fas fa-desktop"></i></button>
+    </div>
+</div>
+
+<!-- FontAwesome CDN for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<script>
+    // Script to toggle video call overlay visibility
+    document.querySelector('.fa-video').addEventListener('click', () => {
+        document.getElementById('video-call-overlay').classList.toggle('active');
+    });
+
+    document.getElementById('end-call').addEventListener('click', () => {
+        document.getElementById('video-call-overlay').classList.remove('active');
+    });
+</script>
+
+{% else %}
+<div class="container">
+    <div class="alert alert-info d-flex justify-content-between" role="alert">
+        <h5>You are not logged in</h5>
+        <a href="/accounts/login/">
+            <button type="button" class="btn btn-light">Log In</button>
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

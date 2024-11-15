@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat Room{% endblock %}
+
+{% block content %}
+<style>
+    /* Base Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 0;
+    }
+
+    .header {
+        background-color: #5a67d8;
+        padding: 15px;
+        text-align: center;
+        color: white;
+        font-weight: bold;
+    }
+
+    .header .logout-btn {
+        background-color: #edf2f7;
+        color: #5a67d8;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        margin-left: 20px;
+    }
+
+    .header .logout-btn:hover {
+        background-color: #e2e8f0;
+    }
+
+    /* Title Section */
+    .section-title {
+        color: #5a67d8;
+        font-size: 1.5em;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    /* Room Container */
+    .room-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Room Card Styling */
+    .room-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 220px;
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .room-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .room-card h3 {
+        font-size: 1.3em;
+        color: #333;
+        margin: 10px 0;
+    }
+
+    .room-card p {
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .room-card button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 0.9em;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .room-card button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Chat Layout */
+    .chat-container {
+        display: flex;
+        height: 100vh;
+    }
+
+    .chat-sidebar {
+        width: 80px;
+        background-color: #2f3640;
+        color: #dcdde1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+    }
+
+    .chat-sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .chat-sidebar ul li {
+        margin: 20px 0;
+        text-align: center;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+
+    .chat-sidebar ul li:hover {
+        color: #3498db;
+    }
+
+    .chat-window-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #f5f6fa;
+    }
+
+    .chat-header {
+        background-color: #2f3640;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .chat-window {
+        flex: 1;
+        padding: 20px;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 15px;
+        margin: 5px 0;
+    }
+
+    .sent {
+        align-self: flex-end;
+        background-color: #3498db;
+        color: #fff;
+    }
+
+    .received {
+        align-self: flex-start;
+        background-color: #dcdde1;
+        color: #333;
+    }
+
+    .message-input {
+        display: flex;
+        padding: 10px;
+        background-color: #2f3640;
+        align-items: center;
+    }
+
+    .message-input input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 20px;
+        outline: none;
+    }
+
+    .send-btn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-left: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    #video-container {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+
+    #video-container video {
+        width: 45%;
+        margin: 10px;
+        border-radius: 10px;
+    }
+</style>
+
+{% if user.is_authenticated %}
+<div class="header">
+    Hi <strong>{{ user.username }}</strong>, Welcome to Chatapp
+    <button class="logout-btn" onclick="location.href='{% url 'logout' %}'">Click to Log Out</button>
+</div>
+
+{% if rooms %}
+<h2 class="section-title">Available Public Rooms</h2>
+<div class="room-container">
+    {% for room in rooms %}
+        <div class="room-card">
+            <h3>{{ room.name }}</h3>
+            <p>Public group for this project.</p>
+            <button onclick="location.href='{% url 'room' room.slug %}'">Go to Room</button>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <ul>
+            <li><i class="fas fa-comments"></i> Chats</li>
+            <li id="video-call-btn"><i class="fas fa-video"></i> Video Calls</li>
+            <li><i class="fas fa-user-friends"></i> Contacts</li>
+            <li><i class="fas fa-cog"></i> Settings</li>
+            <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+        </ul>
+    </div>
+
+    <div class="chat-window-container">
+        <div class="chat-header">
+            <h3>Chat with User</h3>
+        </div>
+        
+        <div class="chat-window" id="chatbox">
+            {% for message in messages %}
+            <div class="message {% if message.user == request.user %}sent{% else %}received{% endif %}">
+                <b>{{ message.user.username }}</b>: {{ message.content }}
+                {% if message.file %}
+                <a href="{{ message.file.url }}" download>Download File</a>
+                {% endif %}
+                <span class="time">{{ message.formatted_time }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="video-container">
+            <video id="localVideo" autoplay muted></video>
+            <video id="remoteVideo" autoplay></video>
+        </div>
+
+        <div class="message-input">
+            <form method="POST" enctype="multipart/form-data" id="chat-form">
+                {% csrf_token %}
+                <input type="text" name="content" placeholder="Type a message..." id="my_input">
+                <input type="file" name="file" id="file-input">
+                <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+                <button type="button" id="chatbot-btn" class="send-btn"><i class="fas fa-robot"></i> Chatbot</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="container">
+    <div class="alert alert-info d-flex justify-content-between" role="alert">
+        <h5>You are not logged in</h5>
+        <a href="/accounts/login/">
+            <button type="button" class="btn btn-light">Log In</button>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<script>
+    // WebSocket connection for video signaling
+    const videoSocket = new WebSocket('ws://' + window.location.host + '/ws/video-signal/');
+
+    videoSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        switch (data.type) {
+            case 'offer':
+                handleOffer(data.offer);
+                break;
+            case 'answer':
+                handleAnswer(data.answer);
+                break;
+            case 'ice_candidate':
+                handleNewICECandidate(data.candidate);
+                break;
+        }
+    };
+
+    function handleOffer(offer) {
+        // Handle incoming video call offer
+    }
+
+    function handleAnswer(answer) {
+        // Handle incoming video call answer
+    }
+
+    function handleNewICECandidate(candidate) {
+        // Handle ICE candidates
+    }
+
+    function initiateVideoCall() {
+        // Trigger video call setup
+        document.getElementById('video-container').style.display = 'block';
+    }
+
+    // Video call button event
+    document.getElementById('video-call-btn').addEventListener('click', initiateVideoCall);
+</script>
+
+{% endblock %}

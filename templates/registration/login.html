@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        background: url('https://images.unsplash.com/photo-1542281286-9e0a16bb7366') no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .login-container {
+        max-width: 400px;
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .login-container h3 {
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+    .login-container .btn-primary {
+        width: 100%;
+    }
+    .login-container .form-group {
+        margin-bottom: 20px;
+    }
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <div class="login-container">
+        <h3>Log In</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Log In</button>
+            </div>
+        </form>
+        <div class="text-center">
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+        </div>
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

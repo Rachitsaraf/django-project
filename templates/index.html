@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRN1XJXrb8yYG8k1aXGhSxjBQtwK6gkN6qZZ+6RlyGhJxUJiCulVrq+gVb+3L0+f7MTZxDQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Overlay for Background Image -->
+    <div class="overlay"></div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="welcome">
+            <i class="fas fa-user-circle"></i>
+            <span>Welcome, User!</span>
+        </div>
+        <button class="logout-button">Logout</button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Search and Filter Bar -->
+        <div class="search-filter">
+            <input type="text" id="searchBar" placeholder="Search for rooms...">
+            <select id="filterSelect">
+                <option value="all">All Types</option>
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+            </select>
+        </div>
+
+        <!-- Rooms Grid -->
+        <div class="rooms-grid" id="roomsGrid">
+            <!-- Room Card Example -->
+            <div class="room-card" data-type="public">
+                <h3>Chatroom 01</h3>
+                <p class="room-type"><i class="fas fa-globe"></i> Public</p>
+                <p class="participants"><i class="fas fa-users"></i> 10 Participants</p>
+                <button class="go-to-room">Go to Room</button>
+            </div>
+            <!-- Repeat similar room cards as needed -->
+            <!-- Add more room cards dynamically or statically -->
+        </div>
+    </main>
+
+    <!-- Optional JavaScript for Interactivity -->
+    <script src="script.js"></script>
+</body>
+</html>
